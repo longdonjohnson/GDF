@@ -1,0 +1,92 @@
+#:kivy 2.1.0
+
+<ImageWidget>:
+    canvas.before:
+        Color:
+            rgba: 0.1, 0.1, 0.1, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    ScatterLayout:
+        id: scatter
+        do_rotation: False
+        auto_bring_to_front: False
+
+        Image:
+            id: main_image
+            source: root.source_image
+            size_hint: None, None
+            size: self.texture_size[0] if self.texture else 100, self.texture_size[1] if self.texture else 100
+            allow_stretch: True
+            keep_ratio: True
+
+<MainLayout>:
+    orientation: 'vertical'
+    spacing: 10
+    padding: 10
+
+    # Top Toolbar
+    BoxLayout:
+        size_hint_y: None
+        height: '48dp'
+        spacing: 10
+
+        Button:
+            text: 'Load Image'
+            size_hint_x: 0.3
+            on_release: root.show_load_dialog()
+
+        Label:
+            text: root.status_message
+            size_hint_x: 0.7
+            text_size: self.size
+            halign: 'right'
+            valign: 'middle'
+
+    # Main Image Area
+    ImageWidget:
+        id: image_widget
+        size_hint_y: 0.7
+
+    # Controls Area
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint_y: 0.2
+        spacing: 10
+
+        # Truth Fader
+        BoxLayout:
+            size_hint_y: None
+            height: '48dp'
+            spacing: 10
+
+            Label:
+                text: 'Raw'
+                size_hint_x: 0.1
+
+            Slider:
+                id: truth_fader
+                min: 0.0
+                max: 1.0
+                value: 0.0
+                on_value: root.on_slider_change(self.value)
+
+            Label:
+                text: 'Processed'
+                size_hint_x: 0.1
+
+        # Preset Bar
+        ScrollView:
+            size_hint_y: None
+            height: '60dp'
+            do_scroll_x: True
+            do_scroll_y: False
+
+            BoxLayout:
+                id: preset_container
+                orientation: 'horizontal'
+                size_hint_x: None
+                width: self.minimum_width
+                spacing: 10
+                padding: 5
