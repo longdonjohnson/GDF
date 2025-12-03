@@ -20,17 +20,25 @@ jobs:
           sudo rm -rf /opt/ghc
           sudo rm -rf "/usr/local/share/boost"
 
-      # STEP 3: The Buildozer Action (Custom Spec)
-      - name: Build with Buildozer
-        uses: ArtemSBulgakov/buildozer-action@v1
-        id: buildozer
+      - name: Setup Java
+        uses: actions/setup-java@v4
         with:
-          command: |
-            sudo apt-get update
-            sudo apt-get install -y openjdk-17-jdk
-            export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
-            buildozer android debug
-          buildozer_version: master
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libssl-dev libffi-dev python3-dev
+          sudo apt-get install -y unzip zip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake
+          sudo apt-get install -y ffmpeg libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev
+          pip install --upgrade pip
+          pip install buildozer cython
+
+      # STEP 3: Build with Buildozer (Manual)
+      - name: Build with Buildozer
+        run: |
+          yes | buildozer android debug
 
       # STEP 4: V4 Artifact Upload (The Delivery)
       - name: Upload APK
