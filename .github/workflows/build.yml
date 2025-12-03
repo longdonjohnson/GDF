@@ -1,0 +1,37 @@
+name: GDF Mobile Build (V4)
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+
+    steps:
+      # STEP 1: V4 Checkout
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # STEP 2: Environment Prep (Fixes the Gradle/Java choke point)
+      - name: Free Disk Space
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "/usr/local/share/boost"
+
+      # STEP 3: The Buildozer Action (Custom Spec)
+      - name: Build with Buildozer
+        uses: ArtemSBulgakov/buildozer-action@v1
+        id: buildozer
+        with:
+          command: buildozer android debug
+          buildozer_version: master
+
+      # STEP 4: V4 Artifact Upload (The Delivery)
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: GDF-Forensic-Tool-v1
+          path: bin/*.apk
+          retention-days: 5
